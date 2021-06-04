@@ -1,7 +1,26 @@
-# Resilience in larger clusters
+# Resilience in small clusters
 
 ## 一个节点的集群
 
 节点完成所有工作，拥有所有角色，要保证状态是green，则必须保证至少有一个replica ，通过设置t `index.number_of_replicas` = `0`
 
 生产环境下不建议使用。
+
+
+
+## 两个节点的集群
+
+建议两个节点都是data节点，并且应该通过设置`index.number_of_replicas`=`1`以确保每个分片都冗余地存储在两个节点上.
+
+建议在两个节点之一设置`node.master`=`false` ，这样该节点就不是合格的master。这就确定了那个是集群的master节点，集群可以容忍另一个不合格的主节点的丢失。
+
+如果不设置其中之一为`node.master=false` ，这就是说master选举有两个节点。如果其中一个节点故障，则选举失败。
+
+建议给这两个节点配置除了master外的所有角色。
+
+客户端es服务器的时候要配置两个节点的地址，或者使用负载均衡能自动定位两个节点中可提供服务的节点。
+
+
+
+跟一个节点的类似，故障后无法提供自愈能力，不是弹性的。所有在生产环境下依然不建议使用。
+
